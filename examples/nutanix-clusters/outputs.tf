@@ -43,12 +43,12 @@ output "nutanix_cluster2_cvim_ip_address" {
 
 output "nutanix_cluster1_virtual_ip_address" {
   description = "Reserved IP for cluster virtal IP"
-  value       =  module.nutanix_cluster1.virtual_ip_address
+  value       = module.nutanix_cluster1.virtual_ip_address
 }
 
 output "nutanix_cluster2_virtual_ip_address" {
   description = "Reserved IP for cluster virtal IP"
-  value       =  module.nutanix_cluster2.virtual_ip_address
+  value       = module.nutanix_cluster2.virtual_ip_address
 }
 
 output "nutanix_cluster1_iscsi_data_services_ip" {
