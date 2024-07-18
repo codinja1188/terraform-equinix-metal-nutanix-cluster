@@ -56,9 +56,6 @@ jobs:
         eval "$(ssh-agent -a $SSH_AUTH_SOCK)"
         ssh-add /tmp/private_ssh_key
 
-    - name: Terraform Vars - Cluster Name
-      run: echo "TF_VAR_cluster_name=tfacc-${SHORT_SHA}" >> $GITHUB_ENV
-
     - name: Terraform Plan
       id: plan
       timeout-minutes: 120
