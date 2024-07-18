@@ -19,12 +19,12 @@ jobs:
     env:
       SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       TF_IN_AUTOMATION: 1
-      TF_VERSION: 1.4
+      TF_VERSION: 1.7.5
       TF_VAR_create_project: false
       TF_VAR_metal_bastion_plan: "m3.small.x86"
       TF_VAR_metal_nutanix_os: "nutanix_lts_6_5"
       TF_VAR_metal_nutanix_plan: "m3.large.x86"
-      TF_VAR_nutanix_node_count: 3
+      TF_VAR_nutanix_node_count: 1
       TF_VAR_skip_cluster_creation: false
       TF_VAR_cluster_subnet: "192.168.96.0/21"
       TF_VAR_cluster_gateway: "192.168.96.1"
