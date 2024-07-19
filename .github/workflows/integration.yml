@@ -56,9 +56,7 @@ jobs:
         eval "$(ssh-agent -a $SSH_AUTH_SOCK)"
         ssh-add /tmp/private_ssh_key
     - name: Configure SSHD Settings
-      run: |
-        ssh -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -o StrictHostKeyChecking=no -i /tmp/private_ssh_key user@bastion_host" user@nutanix_host << 'EOF'
-          sudo bash -c "
+      run: | sudo bash -c "
             # Enable required SSHD settings
             echo 'tcpkeepalive yes' >> /etc/ssh/sshd_config
             echo 'allowtcpforwarding yes' >> /etc/ssh/sshd_config
