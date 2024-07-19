@@ -36,6 +36,7 @@ jobs:
     steps:
     - name: Checkout from GitHub
       uses: actions/checkout@v4
+
     - name: Add SHORT_SHA env property with commit short SHA
       run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
 
@@ -55,22 +56,24 @@ jobs:
         chmod 600 /tmp/private_ssh_key
         eval "$(ssh-agent -a $SSH_AUTH_SOCK)"
         ssh-add /tmp/private_ssh_key
+
     - name: Configure SSHD Settings
-      run: | sudo bash -c "
-            # Enable required SSHD settings
-            echo 'tcpkeepalive yes' >> /etc/ssh/sshd_config
-            echo 'allowtcpforwarding yes' >> /etc/ssh/sshd_config
-            echo 'permitopen any' >> /etc/ssh/sshd_config
+      run: |
+        sudo bash -c "
+          # Enable required SSHD settings
+          echo 'tcpkeepalive yes' >> /etc/ssh/sshd_config
+          echo 'allowtcpforwarding yes' >> /etc/ssh/sshd_config
+          echo 'permitopen any' >> /etc/ssh/sshd_config
 
-            # Reload SSHD service
-            systemctl reload sshd.service
+          # Reload SSHD service
+          systemctl reload sshd.service
 
-            # Verify settings
-            sshd -T | grep -Ei 'TCPKeepAlive|AllowTCPForwarding|PermitOpen'
+          # Verify settings
+          sshd -T | grep -Ei 'TCPKeepAlive|AllowTCPForwarding|PermitOpen'
 
-            # Ensure localhost entry is present
-            grep -i localhost /etc/hosts || echo -e '127.0.0.1\tlocalhost.localdomain localhost\n::1\tlocalhost localhost.localdomain' >> /etc/hosts
-          "
+          # Ensure localhost entry is present
+          grep -i localhost /etc/hosts || echo -e '127.0.0.1\tlocalhost.localdomain localhost\n::1\tlocalhost localhost.localdomain' >> /etc/hosts
+        "
 
     - name: Test SSH Connection
       run: |
