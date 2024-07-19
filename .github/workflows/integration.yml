@@ -71,7 +71,6 @@ jobs:
             # Ensure localhost entry is present
             grep -i localhost /etc/hosts || echo -e '127.0.0.1\tlocalhost.localdomain localhost\n::1\tlocalhost localhost.localdomain' >> /etc/hosts
           "
-        EOF
 
     - name: Test SSH Connection
       run: |
