@@ -75,10 +75,6 @@ jobs:
           grep -i localhost /etc/hosts || echo -e '127.0.0.1\tlocalhost.localdomain localhost\n::1\tlocalhost localhost.localdomain' >> /etc/hosts
         "
 
-    - name: Test SSH Connection
-      run: |
-        ssh -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -o StrictHostKeyChecking=no -i /tmp/private_ssh_key user@bastion_host" user@nutanix_host 'echo "SSH Connection Successful"'
-
     - name: Terraform Plan
       id: plan
       timeout-minutes: 120
