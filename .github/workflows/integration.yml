@@ -55,6 +55,29 @@ jobs:
         chmod 600 /tmp/private_ssh_key
         eval "$(ssh-agent -a $SSH_AUTH_SOCK)"
         ssh-add /tmp/private_ssh_key
+    - name: Configure SSHD Settings
+      run: |
+        ssh -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -o StrictHostKeyChecking=no -i /tmp/private_ssh_key user@bastion_host" user@nutanix_host << 'EOF'
+          sudo bash -c "
+            # Enable required SSHD settings
+            echo 'tcpkeepalive yes' >> /etc/ssh/sshd_config
+            echo 'allowtcpforwarding yes' >> /etc/ssh/sshd_config
+            echo 'permitopen any' >> /etc/ssh/sshd_config
+
+            # Reload SSHD service
+            systemctl reload sshd.service
+
+            # Verify settings
+            sshd -T | grep -Ei 'TCPKeepAlive|AllowTCPForwarding|PermitOpen'
+
+            # Ensure localhost entry is present
+            grep -i localhost /etc/hosts || echo -e '127.0.0.1\tlocalhost.localdomain localhost\n::1\tlocalhost localhost.localdomain' >> /etc/hosts
+          "
+        EOF
+
+    - name: Test SSH Connection
+      run: |
+        ssh -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -o StrictHostKeyChecking=no -i /tmp/private_ssh_key user@bastion_host" user@nutanix_host 'echo "SSH Connection Successful"'
 
     - name: Terraform Plan
       id: plan
