@@ -49,6 +49,13 @@ jobs:
       id: init
       run: terraform init -input=false
 
+    - name: Set up SSH
+      run: |
+        echo "${{ secrets.METAL_SSH_PRIVATE_KEY }}" | base64 --decode > /tmp/private_ssh_key
+        chmod 600 /tmp/private_ssh_key
+        eval "$(ssh-agent -a $SSH_AUTH_SOCK)"
+        ssh-add /tmp/private_ssh_key
+
     - name: Configure SSHD Settings
       run: |
         sudo bash -c "
