@@ -55,9 +55,6 @@ jobs:
         chmod 600 /tmp/private_ssh_key
         eval "$(ssh-agent -a $SSH_AUTH_SOCK)"
         ssh-add /tmp/private_ssh_key
-        # Add the host to known_hosts to prevent interactive prompt
-        ssh-keyscan -H bastion_host >> ~/.ssh/known_hosts
-        ssh-keyscan -H nutanix_host >> ~/.ssh/known_hosts
 
     - name: Configure SSHD Settings
       run: |
