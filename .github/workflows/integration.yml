@@ -51,6 +51,8 @@ jobs:
 
     - name: Set up SSH
       run: |
+        ssh-agent -a $SSH_AUTH_SOCK > /dev/null
+        unset SSH_AUTH_SOCK
         echo "${{ secrets.METAL_SSH_PRIVATE_KEY }}" | base64 --decode > /tmp/private_ssh_key
         chmod 600 /tmp/private_ssh_key
         eval "$(ssh-agent -a $SSH_AUTH_SOCK)"
