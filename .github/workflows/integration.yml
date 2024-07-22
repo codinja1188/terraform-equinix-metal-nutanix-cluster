@@ -56,7 +56,6 @@ jobs:
           echo 'AllowTcpForwarding yes' >> /etc/ssh/sshd_config
           echo 'PermitOpen any' >> /etc/ssh/sshd_config
           systemctl reload sshd.service
-          unset SSH_AUTH_SOCK
         "
         
     - name: Enable Debug Logging
