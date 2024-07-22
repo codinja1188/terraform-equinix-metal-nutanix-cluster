@@ -49,31 +49,29 @@ jobs:
       id: init
       run: terraform init -input=false
 
-    # Configure an SSH Agent with a key that can access the project
     - name: Set up SSH
       run: |
         echo "${{ secrets.METAL_SSH_PRIVATE_KEY }}" | base64 --decode > /tmp/private_ssh_key
         chmod 600 /tmp/private_ssh_key
         eval "$(ssh-agent -a $SSH_AUTH_SOCK)"
         ssh-add /tmp/private_ssh_key
+        # Add the host to known_hosts to prevent interactive prompt
+        ssh-keyscan -H bastion_host >> ~/.ssh/known_hosts
+        ssh-keyscan -H nutanix_host >> ~/.ssh/known_hosts
 
     - name: Configure SSHD Settings
       run: |
         sudo bash -c "
-          # Enable required SSHD settings
-          echo 'tcpkeepalive yes' >> /etc/ssh/sshd_config
-          echo 'allowtcpforwarding yes' >> /etc/ssh/sshd_config
-          echo 'permitopen any' >> /etc/ssh/sshd_config
-
-          # Reload SSHD service
+          echo 'TCPKeepAlive yes' >> /etc/ssh/sshd_config
+          echo 'AllowTcpForwarding yes' >> /etc/ssh/sshd_config
+          echo 'PermitOpen any' >> /etc/ssh/sshd_config
           systemctl reload sshd.service
-
-          # Verify settings
-          sshd -T | grep -Ei 'TCPKeepAlive|AllowTCPForwarding|PermitOpen'
-
-          # Ensure localhost entry is present
-          grep -i localhost /etc/hosts || echo -e '127.0.0.1\tlocalhost.localdomain localhost\n::1\tlocalhost localhost.localdomain' >> /etc/hosts
         "
+
+    - name: Enable Debug Logging
+      run: |
+        echo "RUNNER_DEBUG=true" >> $GITHUB_ENV
+        echo "ACTIONS_RUNNER_DEBUG=true" >> $GITHUB_ENV
 
     - name: Terraform Plan
       id: plan
@@ -84,10 +82,6 @@ jobs:
       id: apply
       timeout-minutes: 120
       run: terraform apply -input=false tfplan
-
-    - name: Verify Nutanix Cluster
-      run: |
-        sshpass -p "${{ secrets.BASTION_HOST_PASSWORD }}" ssh -o StrictHostKeyChecking=no -o ProxyCommand="ssh -W %h:%p -o StrictHostKeyChecking=no -i <(echo ${{ secrets.METAL_SSH_PRIVATE_KEY }} | base64 -d) user@bastion_host" user@nutanix_host 'ncli cluster status'
 
     - name: Terraform Destroy with Retry
       id: destroy
