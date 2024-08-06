@@ -1,7 +1,5 @@
 name: 'integration'
 
-# This workflow verifies that the module provisions successfully for all software and infrastructure defined.
-
 on:
   workflow_dispatch:
   push:
@@ -26,7 +24,7 @@ jobs:
       TF_VAR_metal_nutanix_plan: "m3.large.x86"
       TF_VAR_nutanix_node_count: 1
       TF_VAR_skip_cluster_creation: false
-      TF_VAR_cluster_subnet: "192.168.96.0/21"
+      TF_VAR_cluster_subnet: "192.168.96.0/22"
       TF_VAR_cluster_gateway: "192.168.96.1"
       TF_VAR_metal_metro: "sl"
       TF_VAR_metal_auth_token: ${{ secrets.METAL_AUTH_TOKEN }}
@@ -63,7 +61,7 @@ jobs:
           echo 'AllowTcpForwarding yes' >> /etc/ssh/sshd_config
           echo 'PermitOpen any' >> /etc/ssh/sshd_config
           systemctl reload sshd.service
-        " 
+        "
     - name: Enable Debug Logging
       run: |
         echo "RUNNER_DEBUG=true" >> $GITHUB_ENV
