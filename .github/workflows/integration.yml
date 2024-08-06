@@ -1,7 +1,5 @@
 name: 'integration'
 
-# This workflow verifies that the module provisions successfully for all software and infrastructure defined.
-
 on:
   workflow_dispatch:
   push:
@@ -17,7 +15,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 180
     env:
-      SSH_AUTH_SOCK: /tmp/ssh_agent.sock
       TF_IN_AUTOMATION: 1
       TF_VERSION: 1.7.5
       TF_VAR_create_project: false
@@ -26,7 +23,7 @@ jobs:
       TF_VAR_metal_nutanix_plan: "m3.large.x86"
       TF_VAR_nutanix_node_count: 1
       TF_VAR_skip_cluster_creation: false
-      TF_VAR_cluster_subnet: "192.168.96.0/21"
+      TF_VAR_cluster_subnet: "192.168.96.0/22"
       TF_VAR_cluster_gateway: "192.168.96.1"
       TF_VAR_metal_metro: "sl"
       TF_VAR_metal_auth_token: ${{ secrets.METAL_AUTH_TOKEN }}
@@ -36,6 +33,9 @@ jobs:
     steps:
     - name: Checkout from GitHub
       uses: actions/checkout@v4
+
+    - name: Unset SSH_AUTH_SOCK
+      run: unset SSH_AUTH_SOCK
 
     - name: Add SHORT_SHA env property with commit short SHA
       run: echo "SHORT_SHA=`echo ${GITHUB_SHA} | cut -c1-8`" >> $GITHUB_ENV
@@ -63,7 +63,7 @@ jobs:
           echo 'AllowTcpForwarding yes' >> /etc/ssh/sshd_config
           echo 'PermitOpen any' >> /etc/ssh/sshd_config
           systemctl reload sshd.service
-        " 
+        "
     - name: Enable Debug Logging
       run: |
         echo "RUNNER_DEBUG=true" >> $GITHUB_ENV
