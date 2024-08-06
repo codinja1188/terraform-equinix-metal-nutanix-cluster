@@ -22,7 +22,7 @@ jobs:
       TF_VERSION: 1.7.5
       TF_VAR_create_project: false
       TF_VAR_metal_bastion_plan: "m3.small.x86"
-      TF_VAR_metal_nutanix_os: "nutanix_lts_6_5"
+      TF_VAR_metal_nutanix_os: "nutanix_lts_6_5_poc"
       TF_VAR_metal_nutanix_plan: "m3.large.x86"
       TF_VAR_nutanix_node_count: 1
       TF_VAR_skip_cluster_creation: false
@@ -63,8 +63,7 @@ jobs:
           echo 'AllowTcpForwarding yes' >> /etc/ssh/sshd_config
           echo 'PermitOpen any' >> /etc/ssh/sshd_config
           systemctl reload sshd.service
-        "
-        
+        " 
     - name: Enable Debug Logging
       run: |
         echo "RUNNER_DEBUG=true" >> $GITHUB_ENV
